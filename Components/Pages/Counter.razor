@@ -4,28 +4,32 @@
 
 <PageTitle>Fluency Calculator</PageTitle>
 
-<h1>Counter</h1>
+<h1>Fluency Calculator</h1>
 
-<p role="status">Syllables: @syllableCount</p>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-8 offset-md-2">
+            <div>
+                <h2>@elapsedTime</h2>
+                <button class="btn btn-warning me-2" @onclick="ToggleTimer">@buttonText Timer</button>
+                <button class="btn btn-secondary" @onclick="ResetTimer">Reset Timer</button>
+            </div>
 
-<button class="btn btn-primary" @onclick="IncrementSyllableCount" disabled="@(isStart ? false : true)">Syllable</button>
+            <div class="mt-3">
+                <button class="btn btn-primary me-2" @onclick="IncrementSyllableCount" disabled="@(isStart ? false : true)">Syllable</button>
+                <button class="btn btn-danger" @onclick="IncrementStutterCount" disabled="@(isStart ? false : true)">Stutter</button>
+            </div>
 
-<p role="status">Stutters: @stutterCount</p>
+            <div class="mt-3">
+                <h3 role="status">Syllables: @syllableCount</h3>
+                <h3 role="status">Stutters: @stutterCount</h3>
+                <h3 role="status">SPM: @spm.ToString("F2")</h3>
+                <h3 role="status">SS%: @ssPerc.ToString("F2") %</h3>
+            </div>
 
-<button class="btn btn-primary" @onclick="IncrementStutterCount" disabled="@(isStart ? false : true)">Stutter</button>
-
-<p role="status">SPM: @spm.ToString("F2")</p>
-
-<p role="status">SS%: @ssPerc.ToString("F2") %</p>
-
-<button @onclick="ResetMetrics" disabled="@(isStart ? true : false)">Reset Metrics</button>
-
-<h3>Timer</h3>
-
-<div>
-    <p>@elapsedTime</p>
-    <button @onclick="ToggleTimer">@buttonText Timer</button>
-    <button @onclick="ResetTimer">Reset Timer</button>
+            <button class="btn btn-secondary mt-3" @onclick="ResetMetrics" disabled="@(isStart ? true : false)">Reset Metrics</button>
+        </div>
+    </div>
 </div>
 
 @code {
