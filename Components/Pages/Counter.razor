@@ -1,8 +1,8 @@
-﻿@page "/counter"
+﻿@page "/fluencycalculator"
 @rendermode InteractiveServer
 @using System.Timers
 
-<PageTitle>Counter</PageTitle>
+<PageTitle>Fluency Calculator</PageTitle>
 
 <h1>Counter</h1>
 
@@ -14,6 +14,9 @@
 
 <button class="btn btn-primary" @onclick="IncrementStutterCount">Stutter</button>
 
+<p role="status">SPM: @spm</p>
+
+<p role="status">SS%: @ssPerc</p>
 
 <h3>Timer</h3>
 
@@ -30,9 +33,12 @@
     private string elapsedTime = "00:00.000";
     private string buttonText = "Start";
     private bool isRunning = false;
+    private TimeSpan totalElapsed;
 
-    private int syllableCount = 0;
-    private int stutterCount = 0;
+    private double syllableCount = 0;
+    private double stutterCount = 0;
+    private double spm = 0;
+    private double ssPerc = 0;
 
     protected override void OnInitialized()
     {
@@ -70,7 +76,7 @@
     private void OnTimerElapsed(object sender, ElapsedEventArgs e)
     {
         var currentElapsed = DateTime.Now - _lastStartTime;
-        var totalElapsed = _elapsedTime + currentElapsed;
+        totalElapsed = _elapsedTime + currentElapsed;
         elapsedTime = totalElapsed.ToString(@"mm\:ss\.fff");
         InvokeAsync(StateHasChanged);
     }
@@ -78,10 +84,39 @@
     private void IncrementSyllableCount()
     {
         syllableCount++;
+        CalculateSPM();
     }
 
     private void IncrementStutterCount()
     {
         stutterCount++;
+        CalculateSSPercent();
     }
+
+    private void CalculateSPM()
+    {
+        double elapsedSeconds = totalElapsed.TotalSeconds;
+        if (elapsedSeconds > 0)
+        {
+            spm = (syllableCount / elapsedSeconds) * 60;
+        }
+        else
+        {
+            spm = 0;
+        }
+    }
+
+    private void CalculateSSPercent()
+    {
+        double elapsedSeconds = totalElapsed.TotalSeconds;
+        if (elapsedSeconds > 0)
+        {
+            ssPerc = (stutterCount / (stutterCount + syllableCount)) * 100;
+        }
+        else
+        {
+            ssPerc = 0;
+        }
+    }
+}
 }
