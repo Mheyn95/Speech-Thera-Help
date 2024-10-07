@@ -8,15 +8,15 @@
 
 <p role="status">Syllables: @syllableCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementSyllableCount">Syllable</button>
+<button class="btn btn-primary" @onclick="IncrementSyllableCount" disabled="@(isStart ? false : true)">Syllable</button>
 
 <p role="status">Stutters: @stutterCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementStutterCount">Stutter</button>
+<button class="btn btn-primary" @onclick="IncrementStutterCount" disabled="@(isStart ? false : true)">Stutter</button>
 
 <p role="status">SPM: @spm.ToString("F2")</p>
 
-<p role="status">SS%: @ssPerc.ToString("F2")</p>
+<p role="status">SS%: @ssPerc.ToString("F2") %</p>
 
 <h3>Timer</h3>
 
@@ -40,6 +40,8 @@
     private double spm = 0;
     private double ssPerc = 0;
 
+    private bool isStart = false;
+
     protected override void OnInitialized()
     {
         _timer = new Timer(10); // Update interval to 10 milliseconds
@@ -53,14 +55,17 @@
             _timer.Stop();
             _elapsedTime += DateTime.Now - _lastStartTime;
             buttonText = "Start";
+            isStart = false; // Enable buttons when timer stops
         }
         else
         {
             _lastStartTime = DateTime.Now;
             _timer.Start();
             buttonText = "Stop";
+            isStart = true; // Disable buttons when timer starts
         }
         isRunning = !isRunning;
+        InvokeAsync(StateHasChanged); // Ensure state is updated
     }
 
     private void ResetTimer()
@@ -70,7 +75,8 @@
         elapsedTime = "00:00.000";
         buttonText = "Start";
         isRunning = false;
-        InvokeAsync(StateHasChanged);
+        isStart = false; // Ensure buttons are disabled after reset
+        InvokeAsync(StateHasChanged); // Ensure state is updated
     }
 
     private void OnTimerElapsed(object sender, ElapsedEventArgs e)
@@ -85,6 +91,7 @@
     {
         syllableCount++;
         CalculateSPM();
+        CalculateSSPercent();
     }
 
     private void IncrementStutterCount()
