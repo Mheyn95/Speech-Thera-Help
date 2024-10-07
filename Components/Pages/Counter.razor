@@ -18,6 +18,8 @@
 
 <p role="status">SS%: @ssPerc.ToString("F2") %</p>
 
+<button @onclick="ResetMetrics" disabled="@(isStart ? true : false)">Reset Metrics</button>
+
 <h3>Timer</h3>
 
 <div>
@@ -76,6 +78,15 @@
         buttonText = "Start";
         isRunning = false;
         isStart = false; // Ensure buttons are disabled after reset
+        InvokeAsync(StateHasChanged); // Ensure state is updated
+    }
+
+    private void ResetMetrics()
+    {
+        syllableCount = 0;
+        stutterCount = 0;
+        spm = 0;
+        ssPerc = 0;
         InvokeAsync(StateHasChanged); // Ensure state is updated
     }
 
