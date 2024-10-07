@@ -1,19 +1,87 @@
 ﻿@page "/counter"
 @rendermode InteractiveServer
+@using System.Timers
 
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
 
-<p role="status">Current count: @currentCount</p>
+<p role="status">Syllables: @syllableCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="IncrementSyllableCount">Syllable</button>
+
+<p role="status">Stutters: @stutterCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementStutterCount">Stutter</button>
+
+
+<h3>Timer</h3>
+
+<div>
+    <p>@elapsedTime</p>
+    <button @onclick="ToggleTimer">@buttonText Timer</button>
+    <button @onclick="ResetTimer">Reset Timer</button>
+</div>
 
 @code {
-    private int currentCount = 0;
+    private Timer _timer;
+    private TimeSpan _elapsedTime;
+    private DateTime _lastStartTime;
+    private string elapsedTime = "00:00.000";
+    private string buttonText = "Start";
+    private bool isRunning = false;
 
-    private void IncrementCount()
+    private int syllableCount = 0;
+    private int stutterCount = 0;
+
+    protected override void OnInitialized()
     {
-        currentCount++;
+        _timer = new Timer(10); // Update interval to 10 milliseconds
+        _timer.Elapsed += OnTimerElapsed;
+    }
+
+    private void ToggleTimer()
+    {
+        if (isRunning)
+        {
+            _timer.Stop();
+            _elapsedTime += DateTime.Now - _lastStartTime;
+            buttonText = "Start";
+        }
+        else
+        {
+            _lastStartTime = DateTime.Now;
+            _timer.Start();
+            buttonText = "Stop";
+        }
+        isRunning = !isRunning;
+    }
+
+    private void ResetTimer()
+    {
+        _timer.Stop();
+        _elapsedTime = TimeSpan.Zero;
+        elapsedTime = "00:00.000";
+        buttonText = "Start";
+        isRunning = false;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+    {
+        var currentElapsed = DateTime.Now - _lastStartTime;
+        var totalElapsed = _elapsedTime + currentElapsed;
+        elapsedTime = totalElapsed.ToString(@"mm\:ss\.fff");
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void IncrementSyllableCount()
+    {
+        syllableCount++;
+    }
+
+    private void IncrementStutterCount()
+    {
+        stutterCount++;
     }
 }
